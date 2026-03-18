@@ -6,49 +6,46 @@
 <title>Orçamento Papelaria</title>
 
 <style>
-body {
-  font-family: Arial;
-  background:#f4f6fb;
-  padding:15px;
-}
+body { font-family: Arial; background:#f4f6fb; padding:15px; }
 
 .container {
-  max-width:480px;
-  margin:auto;
-  background:#fff;
-  padding:20px;
-  border-radius:16px;
-  box-shadow:0 6px 18px rgba(0,0,0,0.08)
+  max-width:480px; margin:auto; background:#fff; padding:20px;
+  border-radius:16px; box-shadow:0 6px 18px rgba(0,0,0,0.08)
 }
 
 h2 {margin-bottom:10px}
 
-input, select {
+/* Floating + Ícones */
+.field { position:relative; margin-top:14px; }
+.field input, .field select {
   width:100%;
-  margin-top:12px;
-  padding:10px;
+  padding:12px 12px 8px 40px;
   border-radius:10px;
   border:1px solid #ccc;
   font-size:14px;
+  background:#fff;
+  height:44px;
   box-sizing:border-box;
 }
-
-/* Ajuste específico para inputs de texto (Cliente e Projeto) */
-input[type="text"] {
-  height:42px;
+.field label {
+  position:absolute; left:40px; top:14px; font-size:13px; color:#777;
+  background:#fff; padding:0 4px; transition:0.2s ease;
+}
+.field input:focus + label,
+.field input:not(:placeholder-shown) + label,
+.field select:focus + label,
+.field select:not([value=""]) + label {
+  top:-8px; font-size:11px; color:#555;
+}
+.field .icon {
+  position:absolute; left:12px; top:50%; transform:translateY(-50%);
+  font-size:16px; opacity:0.6;
 }
 
 button {
-  margin-top:12px;
-  padding:14px;
-  border-radius:10px;
-  border:none;
-  cursor:pointer;
-  font-weight:bold;
-  width:100%;
-  font-size:15px;
+  margin-top:12px; padding:14px; border-radius:10px; border:none;
+  cursor:pointer; font-weight:bold; width:100%; font-size:15px;
 }
-
 button:active {transform:scale(0.98)}
 
 .btn-add {background:#a8d5ba}
@@ -61,31 +58,13 @@ button:active {transform:scale(0.98)}
 .hidden {display:none}
 
 .projeto-item {
-  background:#eef3ff;
-  padding:12px;
-  border-radius:10px;
-  margin-top:10px;
+  background:#eef3ff; padding:12px; border-radius:10px; margin-top:10px;
 }
 
-.projeto-acoes {
-  display:flex;
-  gap:10px;
-  margin-top:10px;
-}
+.projeto-acoes { display:flex; gap:10px; margin-top:10px; }
+.projeto-acoes button { flex:1; padding:10px; font-size:13px; }
 
-.projeto-acoes button {
-  flex:1;
-  padding:10px;
-  font-size:13px;
-}
-
-.linha-preco {
-  display:flex;
-  gap:10px;
-  align-items:center;
-  margin-top:10px;
-}
-
+.linha-preco { display:flex; gap:10px; align-items:center; margin-top:10px; }
 .linha-preco span {flex:2}
 .linha-preco input {flex:1}
 </style>
@@ -119,23 +98,44 @@ button:active {transform:scale(0.98)}
 
 <button type="button" class="btn-precos" onclick="abrirPrecos()">Editar Tabela de Preços</button>
 
-<input id="cliente" placeholder="Cliente">
-<input id="projeto" placeholder="Projeto">
+<div class="field">
+  <span class="icon">👤</span>
+  <input id="cliente" type="text" placeholder=" ">
+  <label>Cliente</label>
+</div>
 
-<select id="tipoServico" onchange="mostrarCampos()">
-<option value="">Tipo de Serviço</option>
-<option value="1">Somente Impressão</option>
-<option value="2">Somente Encadernação</option>
-<option value="3">Impressão + Encadernação</option>
-</select>
+<div class="field">
+  <span class="icon">📁</span>
+  <input id="projeto" type="text" placeholder=" ">
+  <label>Projeto</label>
+</div>
 
-<select id="tipoImpressao" class="hidden">
-<option value="">Tipo de Impressão</option>
-<option value="simples">Só Frente</option>
-<option value="duplex">Frente e Verso</option>
-</select>
+<div class="field">
+  <span class="icon">⚙️</span>
+  <select id="tipoServico" onchange="mostrarCampos()">
+    <option value="" selected></option>
+    <option value="1">Somente Impressão</option>
+    <option value="2">Somente Encadernação</option>
+    <option value="3">Impressão + Encadernação</option>
+  </select>
+  <label>Tipo de Serviço</label>
+</div>
 
-<input id="paginas" type="number" placeholder="Quantidade de páginas" class="hidden">
+<div class="field hidden" id="boxTipoImp">
+  <span class="icon">🖨️</span>
+  <select id="tipoImpressao">
+    <option value="" selected></option>
+    <option value="simples">Só Frente</option>
+    <option value="duplex">Frente e Verso</option>
+  </select>
+  <label>Tipo de Impressão</label>
+</div>
+
+<div class="field hidden" id="boxPaginas">
+  <span class="icon">📄</span>
+  <input id="paginas" type="number" placeholder=" ">
+  <label>Quantidade de páginas</label>
+</div>
 
 <button type="button" class="btn-add" onclick="adicionarProjeto()">Adicionar outro projeto</button>
 <button type="button" class="btn-gerar" onclick="gerarOrcamento()">Gerar Orçamento</button>
@@ -176,11 +176,11 @@ function salvarPrecos(){
 
 function mostrarCampos(){
  let tipo = tipoServico.value
- tipoImpressao.classList.add('hidden')
- paginas.classList.add('hidden')
+ boxTipoImp.classList.add('hidden')
+ boxPaginas.classList.add('hidden')
 
- if(tipo==="1"||tipo==="3") tipoImpressao.classList.remove('hidden')
- if(tipo) paginas.classList.remove('hidden')
+ if(tipo==="1"||tipo==="3") boxTipoImp.classList.remove('hidden')
+ if(tipo) boxPaginas.classList.remove('hidden')
 }
 
 function adicionarProjeto(){
@@ -207,7 +207,7 @@ function adicionarProjeto(){
 function atualizarLista(){
  listaProjetos.innerHTML=''
  projetos.forEach((p,i)=>{
-  listaProjetos.innerHTML+=`\n  <div class="projeto-item">\n    <b>${p.nome}</b>\n    <div class="projeto-acoes">\n      <button onclick="editar(${i})">Editar</button>\n      <button onclick="remover(${i})">Remover</button>\n    </div>\n  </div>`
+  listaProjetos.innerHTML+=`<div class="projeto-item"><b>${p.nome}</b><div class="projeto-acoes"><button onclick="editar(${i})">Editar</button><button onclick="remover(${i})">Remover</button></div></div>`
  })
 }
 
@@ -222,10 +222,7 @@ function editar(i){
  atualizarLista()
 }
 
-function remover(i){
- projetos.splice(i,1)
- atualizarLista()
-}
+function remover(i){ projetos.splice(i,1); atualizarLista() }
 
 function calcularEnc(f){
  if(f<=50)return precos.enc[0]
@@ -236,89 +233,58 @@ function calcularEnc(f){
 }
 
 function gerarOrcamento(){
-
  if(projeto.value && paginas.value) adicionarProjeto()
-
- if(projetos.length===0){
-  erro('Inclua pelo menos um projeto')
-  return
- }
+ if(projetos.length===0){ erro('Inclua pelo menos um projeto'); return }
 
  let codigo = contador++
  localStorage.setItem('contadorOrcamento', contador)
 
  let nomeCliente = formatarNome(cliente.value || 'Cliente')
-
  let texto=`*🧾 ORÇAMENTO Nº ${codigo}*\n`
  texto+=`*👤 Cliente: ${nomeCliente}*\n\n`
 
  let total=0
-
  projetos.forEach(p=>{
  let totalProj=0
-
  texto+=`*📁 ${p.nome.toUpperCase()}*\n`
 
  if(p.tipo==="1"||p.tipo==="3"){
   texto+=`🖨️ Impressão: ${p.pag} páginas (${p.imp==='duplex'?'frente e verso':'só frente'})\n`
   totalProj+=p.pag*(p.imp==='duplex'?precos.duplex:precos.simples)
  }
-
  if(p.tipo==="2"||p.tipo==="3"){
   texto+=`📘 Encadernação: ${p.folhas} folhas\n`
   totalProj+=calcularEnc(p.folhas)
  }
 
  texto+=`💰 *Total: R$ ${totalProj.toFixed(2)}*\n\n`
-
  total+=totalProj
  })
 
  texto+=`💵 *TOTAL GERAL: R$ ${total.toFixed(2)}*`
 
  orcamentoFinal.innerText=texto
-
  btnCopy.classList.remove('hidden')
  btnWhats.classList.remove('hidden')
  atualizarVisibilidade(true)
 }
 
-function copiarOrcamento(){
- navigator.clipboard.writeText(orcamentoFinal.innerText)
- alert('Copiado!')
-}
-
-function enviarWhatsApp(){
- let texto=encodeURIComponent(orcamentoFinal.innerText)
- window.open(`https://wa.me/?text=${texto}`)
-}
+function copiarOrcamento(){ navigator.clipboard.writeText(orcamentoFinal.innerText); alert('Copiado!') }
+function enviarWhatsApp(){ let texto=encodeURIComponent(orcamentoFinal.innerText); window.open(`https://wa.me/?text=${texto}`) }
 
 function limpar(){
- projeto.value=''
- tipoServico.value=''
- tipoImpressao.value=''
- paginas.value=''
- tipoImpressao.classList.add('hidden')
- paginas.classList.add('hidden')
+ projeto.value=''; tipoServico.value=''; tipoImpressao.value=''; paginas.value=''
+ boxTipoImp.classList.add('hidden'); boxPaginas.classList.add('hidden')
 }
 
 function novoOrcamento(){
- projetos=[]
- cliente.value=''
- limpar()
- listaProjetos.innerHTML=''
- orcamentoFinal.innerHTML=''
- btnCopy.classList.add('hidden')
- btnWhats.classList.add('hidden')
- atualizarVisibilidade()
+ projetos=[]; cliente.value=''; limpar(); listaProjetos.innerHTML=''; orcamentoFinal.innerHTML=''
+ btnCopy.classList.add('hidden'); btnWhats.classList.add('hidden'); atualizarVisibilidade()
 }
 
 function atualizarVisibilidade(orcamentoGerado=false){
- if(projetos.length>0||orcamentoGerado){
-  btnNovo.classList.remove('hidden')
- } else {
-  btnNovo.classList.add('hidden')
- }
+ if(projetos.length>0||orcamentoGerado){ btnNovo.classList.remove('hidden') }
+ else { btnNovo.classList.add('hidden') }
 }
 </script>
 
