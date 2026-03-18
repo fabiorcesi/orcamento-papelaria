@@ -26,10 +26,16 @@ h2 {margin-bottom:10px}
 input, select {
   width:100%;
   margin-top:12px;
-  padding:12px;
+  padding:10px;
   border-radius:10px;
   border:1px solid #ccc;
   font-size:14px;
+  box-sizing:border-box;
+}
+
+/* Ajuste específico para inputs de texto (Cliente e Projeto) */
+input[type="text"] {
+  height:42px;
 }
 
 button {
@@ -105,13 +111,13 @@ button:active {transform:scale(0.98)}
 <div class="linha-preco"><span>201 a 400 folhas</span><input id="enc4" type="number"></div>
 <div class="linha-preco"><span>Acima de 400 folhas</span><input id="enc5" type="number"></div>
 
-<button class="btn-gerar" onclick="salvarPrecos()">Salvar Tabela</button>
+<button type="button" class="btn-gerar" onclick="salvarPrecos()">Salvar Tabela</button>
 </div>
 
 <!-- ORÇAMENTO -->
 <div id="orcamento">
 
-<button class="btn-precos" onclick="abrirPrecos()">Editar Tabela de Preços</button>
+<button type="button" class="btn-precos" onclick="abrirPrecos()">Editar Tabela de Preços</button>
 
 <input id="cliente" placeholder="Cliente">
 <input id="projeto" placeholder="Projeto">
@@ -131,15 +137,15 @@ button:active {transform:scale(0.98)}
 
 <input id="paginas" type="number" placeholder="Quantidade de páginas" class="hidden">
 
-<button class="btn-add" onclick="adicionarProjeto()">Adicionar outro projeto</button>
-<button class="btn-gerar" onclick="gerarOrcamento()">Gerar Orçamento</button>
-<button id="btnNovo" class="btn-novo hidden" onclick="novoOrcamento()">Novo Orçamento</button>
+<button type="button" class="btn-add" onclick="adicionarProjeto()">Adicionar outro projeto</button>
+<button type="button" class="btn-gerar" onclick="gerarOrcamento()">Gerar Orçamento</button>
+<button type="button" id="btnNovo" class="btn-novo hidden" onclick="novoOrcamento()">Novo Orçamento</button>
 
 <div id="listaProjetos"></div>
 <div id="orcamentoFinal"></div>
 
-<button id="btnCopy" class="btn-copy hidden" onclick="copiarOrcamento()">Copiar Orçamento</button>
-<button id="btnWhats" class="btn-whats hidden" onclick="enviarWhatsApp()">Enviar no WhatsApp</button>
+<button type="button" id="btnCopy" class="btn-copy hidden" onclick="copiarOrcamento()">Copiar Orçamento</button>
+<button type="button" id="btnWhats" class="btn-whats hidden" onclick="enviarWhatsApp()">Enviar no WhatsApp</button>
 
 </div>
 </div>
