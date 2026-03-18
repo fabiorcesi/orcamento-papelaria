@@ -1,328 +1,319 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sistema de Orçamentos - Papelaria</title>
-<style>
-body{font-family:Arial;background:#f6f4fb;margin:0;padding:20px}
-.container{max-width:950px;margin:auto;background:white;padding:25px;border-radius:10px;box-shadow:0 0 10px rgba(0,0,0,0.1)}
-h1{color:#6a5acd}
-h2{color:#4b3c75;margin-top:25px}
-label{display:block;margin-top:10px;font-weight:bold}
-input,select{padding:10px;margin-top:5px;width:100%;max-width:320px;border-radius:6px;border:1px solid #ddd}
-button{margin-top:15px;padding:10px 18px;border:none;border-radius:6px;background:#7c6cf0;color:white;cursor:pointer}
-button.secondary{background:#9aa0ff}
-button.whatsapp{background:#25D366}
-button.copy{background:#4a90e2}
-button.add{background:#6bc48f}
-button.new{background:#ff8c42}
-button:hover{opacity:0.9}
-.section{margin-top:25px;padding-top:10px;border-top:1px solid #eee}
-.hidden{display:none}
-.headerRow{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
-.rangeRow{display:flex;gap:10px;margin-top:8px;flex-wrap:wrap}
-.rangeRow input{max-width:120px}
-table{width:100%;border-collapse:collapse;margin-top:20px}
-th{background:#e6ddfa;padding:10px;text-align:left}
-td{padding:10px;border-bottom:1px solid #eee}
-.total{font-size:22px;font-weight:bold;color:#4b3c75;margin-top:20px}
-.obs{background:#efe9fb;padding:10px;margin-top:20px;border-radius:5px}
-.actions{margin-top:15px;display:flex;gap:10px;flex-wrap:wrap}
-.numero{background:#f0ecff;padding:8px 12px;border-radius:6px;font-weight:bold;margin-bottom:10px;display:inline-block}
+<title>Orçamento Papelaria</title>
 
-@media (max-width:600px){
-.container{padding:18px}
-h1{font-size:22px}
-input,select{max-width:100%}
-button{width:100%}
-.actions{flex-direction:column}
+<style>
+body {
+  font-family: Arial;
+  background:#f4f6fb;
+  padding:15px;
 }
+
+.container {
+  max-width:480px;
+  margin:auto;
+  background:#fff;
+  padding:20px;
+  border-radius:16px;
+  box-shadow:0 6px 18px rgba(0,0,0,0.08)
+}
+
+h2 {margin-bottom:10px}
+
+input, select {
+  width:100%;
+  margin-top:12px;
+  padding:12px;
+  border-radius:10px;
+  border:1px solid #ccc;
+  font-size:14px;
+}
+
+button {
+  margin-top:12px;
+  padding:14px;
+  border-radius:10px;
+  border:none;
+  cursor:pointer;
+  font-weight:bold;
+  width:100%;
+  font-size:15px;
+}
+
+button:active {transform:scale(0.98)}
+
+.btn-add {background:#a8d5ba}
+.btn-gerar {background:#a0c4ff}
+.btn-novo {background:#ffd6a5}
+.btn-precos {background:#d0bdf4}
+.btn-copy {background:#cdb4db}
+.btn-whats {background:#b7e4c7}
+
+.hidden {display:none}
+
+.projeto-item {
+  background:#eef3ff;
+  padding:12px;
+  border-radius:10px;
+  margin-top:10px;
+}
+
+.projeto-acoes {
+  display:flex;
+  gap:10px;
+  margin-top:10px;
+}
+
+.projeto-acoes button {
+  flex:1;
+  padding:10px;
+  font-size:13px;
+}
+
+.linha-preco {
+  display:flex;
+  gap:10px;
+  align-items:center;
+  margin-top:10px;
+}
+
+.linha-preco span {flex:2}
+.linha-preco input {flex:1}
 </style>
 </head>
+
 <body>
 
 <div class="container">
 
-<div class="headerRow">
-<h1>Sistema de Orçamentos - Papelaria</h1>
-<button class="secondary" onclick="toggleConfig()">Editar Tabela de Preços</button>
+<h2>Orçamento Papelaria</h2>
+
+<!-- TABELA DE PREÇOS -->
+<div id="configPrecos" class="hidden">
+<h3>Configuração de Preços</h3>
+
+<div class="linha-preco"><span>Impressão Só Frente</span><input id="precoSimples" type="number"></div>
+<div class="linha-preco"><span>Impressão Frente e Verso</span><input id="precoDuplex" type="number"></div>
+
+<h4>Encadernação</h4>
+<div class="linha-preco"><span>Até 50 folhas</span><input id="enc1" type="number"></div>
+<div class="linha-preco"><span>51 a 100 folhas</span><input id="enc2" type="number"></div>
+<div class="linha-preco"><span>101 a 200 folhas</span><input id="enc3" type="number"></div>
+<div class="linha-preco"><span>201 a 400 folhas</span><input id="enc4" type="number"></div>
+<div class="linha-preco"><span>Acima de 400 folhas</span><input id="enc5" type="number"></div>
+
+<button class="btn-gerar" onclick="salvarPrecos()">Salvar Tabela</button>
 </div>
 
-<div id="configSection" class="section hidden">
-<h2>Configuração de Preços</h2>
+<!-- ORÇAMENTO -->
+<div id="orcamento">
 
-<label>Preço impressão Só Frente (por página)</label>
-<input type="number" id="precoFrente" step="0.01">
+<button class="btn-precos" onclick="abrirPrecos()">Editar Tabela de Preços</button>
 
-<label>Preço impressão Frente e Verso (por página)</label>
-<input type="number" id="precoFrenteVerso" step="0.01">
+<input id="cliente" placeholder="Cliente">
+<input id="projeto" placeholder="Projeto">
 
-<h3>Tabela de Encadernação</h3>
-<p>Defina as faixas de folhas e seus preços.</p>
-
-<div id="rangesContainer"></div>
-
-<button class="add" onclick="adicionarFaixa()">Adicionar Faixa</button>
-
-<br>
-<button onclick="salvarTabela()">Salvar / Atualizar Preços</button>
-
-</div>
-
-<div class="section">
-<h2>Novo Orçamento</h2>
-
-<label>Nome do Cliente</label>
-<input type="text" id="cliente">
-
-<label>Tipo de Serviço</label>
-<select id="tipoServico" onchange="atualizarCamposServico()">
+<select id="tipoServico" onchange="mostrarCampos()">
+<option value="">Tipo de Serviço</option>
 <option value="1">Somente Impressão</option>
 <option value="2">Somente Encadernação</option>
 <option value="3">Impressão + Encadernação</option>
 </select>
 
-<div id="blocoImpressao">
-<label>Páginas para impressão</label>
-<input type="number" id="paginas">
-
-<label>Tipo de Impressão</label>
-<select id="tipoImpressao">
-<option value="frente">Só Frente</option>
-<option value="verso">Frente e Verso</option>
+<select id="tipoImpressao" class="hidden">
+<option value="">Tipo de Impressão</option>
+<option value="simples">Só Frente</option>
+<option value="duplex">Frente e Verso</option>
 </select>
+
+<input id="paginas" type="number" placeholder="Quantidade de páginas" class="hidden">
+
+<button class="btn-add" onclick="adicionarProjeto()">Adicionar outro projeto</button>
+<button class="btn-gerar" onclick="gerarOrcamento()">Gerar Orçamento</button>
+<button id="btnNovo" class="btn-novo hidden" onclick="novoOrcamento()">Novo Orçamento</button>
+
+<div id="listaProjetos"></div>
+<div id="orcamentoFinal"></div>
+
+<button id="btnCopy" class="btn-copy hidden" onclick="copiarOrcamento()">Copiar Orçamento</button>
+<button id="btnWhats" class="btn-whats hidden" onclick="enviarWhatsApp()">Enviar no WhatsApp</button>
+
 </div>
-
-<div id="blocoEncadernacao">
-<label>Folhas para encadernação</label>
-<input type="number" id="folhas">
-</div>
-
-<button onclick="gerarOrcamento()">Gerar Orçamento</button>
-
-</div>
-
-<div id="resultado" class="section"></div>
-
 </div>
 
 <script>
+let projetos = []
+let precos = JSON.parse(localStorage.getItem('precos')) || {}
+let contador = parseInt(localStorage.getItem('contadorOrcamento')) || 1
 
-let mensagemWhatsApp=""
+function formatarNome(nome){return nome.toLowerCase().replace(/\b\w/g, l => l.toUpperCase())}
+function erro(msg){alert(msg)}
 
-function obterNumeroOrcamento(){
-let numero=localStorage.getItem('contadorOrcamento')
-
-if(!numero){numero=1}
-else{numero=parseInt(numero)+1}
-
-localStorage.setItem('contadorOrcamento',numero)
-
-return numero.toString().padStart(4,'0')
+function abrirPrecos(){
+ document.getElementById('orcamento').classList.add('hidden')
+ document.getElementById('configPrecos').classList.remove('hidden')
 }
 
-function toggleConfig(){
-const sec=document.getElementById('configSection')
-sec.classList.toggle('hidden')
-carregarTabela()
+function salvarPrecos(){
+ precos = {
+  simples:+precoSimples.value,
+  duplex:+precoDuplex.value,
+  enc:[+enc1.value,+enc2.value,+enc3.value,+enc4.value,+enc5.value]
+ }
+ localStorage.setItem('precos', JSON.stringify(precos))
+ configPrecos.classList.add('hidden')
+ orcamento.classList.remove('hidden')
 }
 
-function atualizarCamposServico(){
-const tipo=document.getElementById('tipoServico').value
-const blocoImpressao=document.getElementById('blocoImpressao')
-const blocoEncadernacao=document.getElementById('blocoEncadernacao')
+function mostrarCampos(){
+ let tipo = tipoServico.value
+ tipoImpressao.classList.add('hidden')
+ paginas.classList.add('hidden')
 
-if(tipo=="1"){
-blocoImpressao.style.display='block'
-blocoEncadernacao.style.display='none'
+ if(tipo==="1"||tipo==="3") tipoImpressao.classList.remove('hidden')
+ if(tipo) paginas.classList.remove('hidden')
 }
 
-if(tipo=="2"){
-blocoImpressao.style.display='none'
-blocoEncadernacao.style.display='block'
+function adicionarProjeto(){
+ let nome=projeto.value
+ let tipo=tipoServico.value
+ let imp=tipoImpressao.value
+ let pag=parseInt(paginas.value)
+
+ if(!nome||!tipo||!pag){erro('Preencha os dados do projeto');return}
+
+ if((tipo==="1"||tipo==="3")&&!imp){
+  erro('Informe o tipo de impressão')
+  return
+ }
+
+ let folhas=imp==='duplex'?Math.ceil(pag/2):pag
+ projetos.push({nome,tipo,imp,pag,folhas})
+
+ atualizarLista()
+ limpar()
+ atualizarVisibilidade()
 }
 
-if(tipo=="3"){
-blocoImpressao.style.display='block'
-blocoEncadernacao.style.display='block'
-}
-}
-
-function adicionarFaixa(limite='',preco=''){
-const container=document.getElementById('rangesContainer')
-const div=document.createElement('div')
-div.className='rangeRow'
-
-div.innerHTML=`
-<input type="number" placeholder="Até folhas" class="limite" value="${limite}">
-<input type="number" step="0.01" placeholder="Preço" class="preco" value="${preco}">
-<button onclick="this.parentElement.remove()">Remover</button>
-`
-
-container.appendChild(div)
+function atualizarLista(){
+ listaProjetos.innerHTML=''
+ projetos.forEach((p,i)=>{
+  listaProjetos.innerHTML+=`\n  <div class="projeto-item">\n    <b>${p.nome}</b>\n    <div class="projeto-acoes">\n      <button onclick="editar(${i})">Editar</button>\n      <button onclick="remover(${i})">Remover</button>\n    </div>\n  </div>`
+ })
 }
 
-function salvarTabela(){
-const limites=document.querySelectorAll('.limite')
-const precos=document.querySelectorAll('.preco')
-let encadernacao=[]
-
-for(let i=0;i<limites.length;i++){
-const limite=parseInt(limites[i].value)
-const preco=parseFloat(precos[i].value)
-
-if(!isNaN(limite)&&!isNaN(preco)){
-encadernacao.push({limite,preco})
-}
+function editar(i){
+ let p=projetos[i]
+ projeto.value=p.nome
+ tipoServico.value=p.tipo
+ mostrarCampos()
+ tipoImpressao.value=p.imp
+ paginas.value=p.pag
+ projetos.splice(i,1)
+ atualizarLista()
 }
 
-encadernacao.sort((a,b)=>a.limite-b.limite)
-
-const tabela={
-precoFrente:parseFloat(document.getElementById('precoFrente').value),
-precoFrenteVerso:parseFloat(document.getElementById('precoFrenteVerso').value),
-encadernacao
+function remover(i){
+ projetos.splice(i,1)
+ atualizarLista()
 }
 
-localStorage.setItem('tabelaPapelaria',JSON.stringify(tabela))
-alert('Tabela de preços salva/atualizada!')
-}
-
-function carregarTabela(){
-const tabela=JSON.parse(localStorage.getItem('tabelaPapelaria'))
-const container=document.getElementById('rangesContainer')
-container.innerHTML=''
-
-if(!tabela){
-adicionarFaixa(50,'')
-adicionarFaixa(100,'')
-adicionarFaixa(200,'')
-adicionarFaixa(400,'')
-adicionarFaixa(9999,'')
-return
-}
-
-document.getElementById('precoFrente').value=tabela.precoFrente
-
-document.getElementById('precoFrenteVerso').value=tabela.precoFrenteVerso
-
-for(let faixa of tabela.encadernacao){
-adicionarFaixa(faixa.limite,faixa.preco)
-}
-}
-
-function calcularEncadernacao(folhas,tabela){
-for(let faixa of tabela){
-if(folhas<=faixa.limite){
-return faixa.preco
-}
-}
-return tabela[tabela.length-1].preco
+function calcularEnc(f){
+ if(f<=50)return precos.enc[0]
+ if(f<=100)return precos.enc[1]
+ if(f<=200)return precos.enc[2]
+ if(f<=400)return precos.enc[3]
+ return precos.enc[4]
 }
 
 function gerarOrcamento(){
 
-const numero=obterNumeroOrcamento()
-const tabela=JSON.parse(localStorage.getItem('tabelaPapelaria'))
+ if(projeto.value && paginas.value) adicionarProjeto()
 
-if(!tabela){alert('Cadastre a tabela de preços primeiro!');return}
+ if(projetos.length===0){
+  erro('Inclua pelo menos um projeto')
+  return
+ }
 
-const cliente=document.getElementById('cliente').value || 'Cliente'
-const tipo=document.getElementById('tipoServico').value
-const paginas=parseInt(document.getElementById('paginas').value)||0
-const folhas=parseInt(document.getElementById('folhas').value)||0
-const tipoImpressao=document.getElementById('tipoImpressao').value
+ let codigo = contador++
+ localStorage.setItem('contadorOrcamento', contador)
 
-let valorImpressao=0
-let valorEncadernacao=0
+ let nomeCliente = formatarNome(cliente.value || 'Cliente')
 
-if(tipo==1||tipo==3){
-if(tipoImpressao=='frente'){
-valorImpressao=paginas*tabela.precoFrente
-}else{
-valorImpressao=paginas*tabela.precoFrenteVerso
-}
-}
+ let texto=`*🧾 ORÇAMENTO Nº ${codigo}*\n`
+ texto+=`*👤 Cliente: ${nomeCliente}*\n\n`
 
-if(tipo==2||tipo==3){
-valorEncadernacao=calcularEncadernacao(folhas,tabela.encadernacao)
-}
+ let total=0
 
-const total=valorImpressao+valorEncadernacao
+ projetos.forEach(p=>{
+ let totalProj=0
 
-mensagemWhatsApp=`Orçamento #${numero} - Papelaria\n\nCliente: ${cliente}\n`
+ texto+=`*📁 ${p.nome.toUpperCase()}*\n`
 
-if(valorImpressao>0){
-mensagemWhatsApp+=`Impressão: ${paginas} páginas - R$ ${valorImpressao.toFixed(2)}\n`
-}
+ if(p.tipo==="1"||p.tipo==="3"){
+  texto+=`🖨️ Impressão: ${p.pag} páginas (${p.imp==='duplex'?'frente e verso':'só frente'})\n`
+  totalProj+=p.pag*(p.imp==='duplex'?precos.duplex:precos.simples)
+ }
 
-if(valorEncadernacao>0){
-mensagemWhatsApp+=`Encadernação: ${folhas} folhas - R$ ${valorEncadernacao.toFixed(2)}\n`
-}
+ if(p.tipo==="2"||p.tipo==="3"){
+  texto+=`📘 Encadernação: ${p.folhas} folhas\n`
+  totalProj+=calcularEnc(p.folhas)
+ }
 
-mensagemWhatsApp+=`\nValor Total: R$ ${total.toFixed(2)}`
+ texto+=`💰 *Total: R$ ${totalProj.toFixed(2)}*\n\n`
 
-let html=`
-<div class='numero'>Orçamento #${numero}</div>
+ total+=totalProj
+ })
 
-<h2>Orçamento</h2>
+ texto+=`💵 *TOTAL GERAL: R$ ${total.toFixed(2)}*`
 
-<p><b>Cliente:</b> ${cliente}</p>
+ orcamentoFinal.innerText=texto
 
-<table>
-<tr><th>Serviço</th><th>Quantidade</th><th>Valor</th></tr>
-`
-
-if(valorImpressao>0){
-html+=`<tr><td>Impressão</td><td>${paginas} páginas</td><td>R$ ${valorImpressao.toFixed(2)}</td></tr>`
-}
-
-if(valorEncadernacao>0){
-html+=`<tr><td>Encadernação</td><td>${folhas} folhas</td><td>R$ ${valorEncadernacao.toFixed(2)}</td></tr>`
-}
-
-html+=`</table>
-
-<p class='total'>Valor Total: R$ ${total.toFixed(2)}</p>
-
-<div class='obs'><b>Observações:</b><br>Prazo e condições podem ser ajustados.</div>
-
-<div class="actions">
-<button class='whatsapp' onclick='abrirWhatsApp()'>Enviar pelo WhatsApp</button>
-<button class='copy' onclick='copiarOrcamento()'>Copiar Orçamento</button>
-<button class='new' onclick='novoOrcamento()'>Gerar Novo Orçamento</button>
-</div>
-`
-
-
-document.getElementById('resultado').innerHTML=html
-}
-
-function abrirWhatsApp(){
-const url=`https://wa.me/?text=${encodeURIComponent(mensagemWhatsApp)}`
-window.open(url,'_blank')
+ btnCopy.classList.remove('hidden')
+ btnWhats.classList.remove('hidden')
+ atualizarVisibilidade(true)
 }
 
 function copiarOrcamento(){
-navigator.clipboard.writeText(mensagemWhatsApp)
-alert("Orçamento copiado para a área de transferência!")
+ navigator.clipboard.writeText(orcamentoFinal.innerText)
+ alert('Copiado!')
+}
+
+function enviarWhatsApp(){
+ let texto=encodeURIComponent(orcamentoFinal.innerText)
+ window.open(`https://wa.me/?text=${texto}`)
+}
+
+function limpar(){
+ projeto.value=''
+ tipoServico.value=''
+ tipoImpressao.value=''
+ paginas.value=''
+ tipoImpressao.classList.add('hidden')
+ paginas.classList.add('hidden')
 }
 
 function novoOrcamento(){
-
-document.getElementById('cliente').value=''
-document.getElementById('paginas').value=''
-document.getElementById('folhas').value=''
-document.getElementById('resultado').innerHTML=''
-
-window.scrollTo({top:0,behavior:'smooth'})
-
+ projetos=[]
+ cliente.value=''
+ limpar()
+ listaProjetos.innerHTML=''
+ orcamentoFinal.innerHTML=''
+ btnCopy.classList.add('hidden')
+ btnWhats.classList.add('hidden')
+ atualizarVisibilidade()
 }
 
-carregarTabela()
-atualizarCamposServico()
-
+function atualizarVisibilidade(orcamentoGerado=false){
+ if(projetos.length>0||orcamentoGerado){
+  btnNovo.classList.remove('hidden')
+ } else {
+  btnNovo.classList.add('hidden')
+ }
+}
 </script>
 
 </body>
